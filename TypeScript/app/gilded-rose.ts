@@ -9,6 +9,23 @@ const ITEM_MAX_QUALITY = 50;
 function decreaseSellIn(item: Item) {
   item.sellIn -= 1
 }
+
+function updateAgedBrieQuality(item: Item) {
+  if (item.quality < ITEM_MAX_QUALITY) {
+    item.quality += 1
+  }
+}
+function updateBackstagePassesQuality(item: Item) {
+  if (item.quality < ITEM_MAX_QUALITY) {
+    item.quality = item.quality + 1
+  }
+}
+function updateDefaultItemQuality(item: Item) {
+  if (item.quality > ITEM_MIN_QUALITY) {
+    item.quality = item.quality - 1
+  }
+}
+
 export class GildedRose {
 
   items: Array<Item>;
@@ -22,28 +39,20 @@ export class GildedRose {
       switch (item.name) {
         case ITEM_NAME_AGED_BRIE:
           decreaseSellIn(item)
-
-          if (item.quality < ITEM_MAX_QUALITY) {
-            item.quality = item.quality + 1
-          }
-
+          updateAgedBrieQuality(item)
           break;
+
         case ITEM_NAME_BACKSTAGE_PASSES:
           decreaseSellIn(item)
-
-          if (item.quality < ITEM_MAX_QUALITY) {
-            item.quality = item.quality + 1
-          }
-
+          updateBackstagePassesQuality(item)
           break;
+
         case ITEM_NAME_SULFURAS:
-
           break;
+
         default:
           decreaseSellIn(item)
-          if (item.quality > ITEM_MIN_QUALITY) {
-            item.quality = item.quality - 1
-          }
+          updateDefaultItemQuality(item)
           break;
       }
     }
