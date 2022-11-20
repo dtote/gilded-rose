@@ -1,140 +1,131 @@
 import {  GildedRose } from '@/gilded-rose';
-import { Item } from '../../app/item';
+import { AgedBrieItem } from '../../app/items/AgedBrieItem';
+import { BackstagePassItem } from '../../app/items/BackstagePassItem';
+import { DefaultItem } from '../../app/items/DefaultItem';
+import { ItemName } from '../../app/value-objects/ItemName';
+import { SulfurasItem } from '../../app/items/SulfurasItem';
+import { ItemSellIn } from '../../app/value-objects/ItemSellIn';
+import { ItemQuality } from '../../app/value-objects/ItemQuality';
 
 describe('Gilded Rose', () => {
 
-  describe('default item +5 Dexterity Vest', () => {
-    it('should be named +5 Dexterity Vest', () => {
-      const gildedRose = new GildedRose([new Item("+5 Dexterity Vest", 10, 20)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].name).toBe('+5 Dexterity Vest');
+  describe('Default items', () => {
+    it('should decrease sellIn', () => {
+      const gildedRose = new GildedRose([new DefaultItem(ItemName.create("+5 Dexterity Vest"), ItemSellIn.create(10), ItemQuality.create(20))]);
+      gildedRose.updateQuality();
+
+      const [result] = gildedRose.items;
+      expect(result.sellIn.getValue()).toBe(9);
     });
 
-    it('should have sellin 9', () => {
-      const gildedRose = new GildedRose([new Item("+5 Dexterity Vest", 10, 20)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].sellIn).toBe(9);
+    it('should decrease item quality x2', () => {
+      const gildedRose = new GildedRose([new DefaultItem(ItemName.create("+5 Dexterity Vest"), ItemSellIn.create(10), ItemQuality.create(20))]);
+      gildedRose.updateQuality();
+
+      const [result] = gildedRose.items;
+      expect(result.quality.getValue()).toBe(18);
     });
 
-    it('should have quality 19', () => {
-      const gildedRose = new GildedRose([new Item("+5 Dexterity Vest", 10, 20)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].quality).toBe(19);
+    it('should decrease item without exceeding min quality limit', () => {
+      const gildedRose = new GildedRose([new DefaultItem(ItemName.create("+5 Dexterity Vest"), ItemSellIn.create(10), ItemQuality.create(1))]);
+      gildedRose.updateQuality();
+
+      const [result] = gildedRose.items;
+      expect(result.quality.getValue()).toBe(0);
     });
    })
 
-  describe('aged brie', () => {
-    it('should have sellin 1', () => {
-      const gildedRose = new GildedRose([new Item("Aged Brie", 2, 0)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].sellIn).toBe(1);
+  describe('Aged brie items', () => {
+    it('should decrease sellIn', () => {
+      const gildedRose = new GildedRose([new AgedBrieItem(ItemName.create("Aged Brie"),  ItemSellIn.create(2),  ItemQuality.create(0))]);
+      gildedRose.updateQuality();
+
+      const [result] = gildedRose.items;
+      expect(result.sellIn.getValue()).toBe(1);
     });
 
-    it('should have quality 1', () => {
-      const gildedRose = new GildedRose([new Item("Aged Brie", 2, 0)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].quality).toBe(1);
-    });
-  })
+    it('should increase item quality x1', () => {
+      const gildedRose = new GildedRose([new AgedBrieItem(ItemName.create("Aged Brie"),  ItemSellIn.create(2),  ItemQuality.create(0))]);
+      gildedRose.updateQuality();
 
-  describe('default item Elixir of the Mongoose', () => {
-    it('should have sellin 4', () => {
-      const gildedRose = new GildedRose([new Item("Elixir of the Mongoose", 5, 7)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].sellIn).toBe(4);
+      const [result] = gildedRose.items;
+      expect(result.quality.getValue()).toBe(1);
     });
 
-    it('should have quality 6', () => {
-      const gildedRose = new GildedRose([new Item("Elixir of the Mongoose", 5, 7)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].quality).toBe(6);
-    });
-    })
+    it('should increase item quality x2', () => {
+      const gildedRose = new GildedRose([new AgedBrieItem(ItemName.create("Aged Brie"),  ItemSellIn.create(0),  ItemQuality.create(0))]);
+      gildedRose.updateQuality();
 
-
-  describe('Sulfuras, Hand of Ragnaros (0, 80)', () => {
-    it('should have sellin 0', () => {
-      const gildedRose = new GildedRose([ new Item("Sulfuras, Hand of Ragnaros", 0, 80)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].sellIn).toBe(0);
-    });
-
-    it('should have quality 80', () => {
-      const gildedRose = new GildedRose([new Item("Sulfuras, Hand of Ragnaros", 0, 80)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].quality).toBe(80);
+      const [result] = gildedRose.items;
+      expect(result.quality.getValue()).toBe(2);
     });
   })
 
-  describe('Sulfuras, Hand of Ragnaros (-1, 80)', () => {
-    it('should have sellin -1', () => {
-      const gildedRose = new GildedRose([ new Item("Sulfuras, Hand of Ragnaros", -1, 80)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].sellIn).toBe(-1);
+  describe('Sulfuras items', () => {
+    it('should have the same sellIn', () => {
+      const gildedRose = new GildedRose([new SulfurasItem(ItemName.create("Sulfuras, Hand of Ragnaros"),  ItemSellIn.create(0),  ItemQuality.create(80))]);
+      gildedRose.updateQuality();
+
+      const [result] = gildedRose.items;
+      expect(result.sellIn.getValue()).toBe(0);
     });
 
-    it('should have quality 80', () => {
-      const gildedRose = new GildedRose([new Item("Sulfuras, Hand of Ragnaros", -1, 80)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].quality).toBe(80);
-    });
-  })
+    it('should have the same quality', () => {
+      const gildedRose = new GildedRose([new SulfurasItem(ItemName.create("Sulfuras, Hand of Ragnaros"),  ItemSellIn.create(0),  ItemQuality.create(80))]);
+      gildedRose.updateQuality();
 
-
-
-  describe('"Backstage passes to a TAFKAL80ETC concert", 15, 20', () => {
-    it('should have sellin 14', () => {
-      const gildedRose = new GildedRose([ new Item("Backstage passes to a TAFKAL80ETC concert", 15, 20)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].sellIn).toBe(14);
-    });
-
-    it('should have quality 21', () => {
-      const gildedRose = new GildedRose([new Item("Backstage passes to a TAFKAL80ETC concert", 15, 20)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].quality).toBe(21);
+      const [result] = gildedRose.items;
+      expect(result.quality.getValue()).toBe(80);
     });
   })
 
-  describe('"Backstage passes to a TAFKAL80ETC concert", 10, 49', () => {
-    it('should have sellin 9', () => {
-      const gildedRose = new GildedRose([ new Item("Backstage passes to a TAFKAL80ETC concert", 10, 49)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].sellIn).toBe(9);
+  describe("Backstage passes items", () => {
+    it('should decrease sellIn', () => {
+      const gildedRose = new GildedRose([new BackstagePassItem(ItemName.create("Backstage passes to a TAFKAL80ETC concert"),  ItemSellIn.create(15),  ItemQuality.create(20))]);
+      gildedRose.updateQuality();
+
+      const [result] = gildedRose.items;
+      expect(result.sellIn.getValue()).toBe(14);
     });
 
-    it('should have quality 50', () => {
-      const gildedRose = new GildedRose([new Item("Backstage passes to a TAFKAL80ETC concert", 10, 49)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].quality).toBe(50);
-    });
-  })
+    it('should increase item quality x1', () => {
+      const gildedRose = new GildedRose([new BackstagePassItem(ItemName.create("Backstage passes to a TAFKAL80ETC concert"),  ItemSellIn.create(15),  ItemQuality.create(20))]);
+      gildedRose.updateQuality();
 
-  describe('"Backstage passes to a TAFKAL80ETC concert", 5, 49', () => {
-    it('should have sellin 4', () => {
-      const gildedRose = new GildedRose([new Item("Backstage passes to a TAFKAL80ETC concert", 5, 49)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].sellIn).toBe(4);
+      const [result] = gildedRose.items;
+      expect(result.quality.getValue()).toBe(21);
     });
 
-    it('should have quality 50', () => {
-      const gildedRose = new GildedRose([new Item("Backstage passes to a TAFKAL80ETC concert", 5, 49)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].quality).toBe(50);
-    });
-  })
+    it('should increase item quality x2', () => {
+      const gildedRose = new GildedRose([new BackstagePassItem(ItemName.create("Backstage passes to a TAFKAL80ETC concert"),  ItemSellIn.create(10),  ItemQuality.create(49))]);
+      gildedRose.updateQuality();
 
-  describe('Default item Conjured Mana Cake', () => {
-    it('should have sellin 2', () => {
-      const gildedRose = new GildedRose([new Item("Conjured Mana Cake", 3, 6)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].sellIn).toBe(2);
+      const [result] = gildedRose.items;
+      expect(result.quality.getValue()).toBe(50);
     });
 
-    it('should have quality 5', () => {
-      const gildedRose = new GildedRose([new Item("Conjured Mana Cake", 3, 6)]);
-      const result = gildedRose.updateQuality();
-      expect(result[0].quality).toBe(5);
+    it('should increase item quality x3', () => {
+      const gildedRose = new GildedRose([new BackstagePassItem(ItemName.create("Backstage passes to a TAFKAL80ETC concert"),  ItemSellIn.create(5),  ItemQuality.create(49))]);
+      gildedRose.updateQuality();
+
+      const [result] = gildedRose.items;
+      expect(result.sellIn.getValue()).toBe(4);
+    });
+
+    it('should reset item quality', () => {
+      const gildedRose = new GildedRose([new BackstagePassItem(ItemName.create("Backstage passes to a TAFKAL80ETC concert"),  ItemSellIn.create(0),  ItemQuality.create(49))]);
+      gildedRose.updateQuality();
+
+      const [result] = gildedRose.items;
+      expect(result.quality.getValue()).toBe(0);
+    });
+
+    it('should increase quality without exceeding max quality limit', () => {
+      const gildedRose = new GildedRose([new BackstagePassItem(ItemName.create("Backstage passes to a TAFKAL80ETC concert"),  ItemSellIn.create(10),  ItemQuality.create(49))]);
+      gildedRose.updateQuality();
+
+      const [result] = gildedRose.items;
+      expect(result.quality.getValue()).toBe(50);
     });
   })
 });
